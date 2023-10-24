@@ -1,0 +1,110 @@
+paths:
+  /users:
+    get:
+      summary: Listar todos os usuários
+      tags: [users]
+      responses:
+        200:
+          description: Lista de usuários
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UserCreatedResponse"
+    post:
+      summary: Registrar um novo usuário
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        201:
+          description: O usuário registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/UserCreatedResponse"
+        400:
+          description: Ocorre quando uma restrição de usuário não é respeitada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCreationFailResponse"
+  /users/me:
+    get:
+      summary: Recuperar dados do usuário autenticado
+      tags: [users]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: O usuário autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCreatedResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedError" 
+  /users/{id}:
+    get:
+      summary: Recuperar um usuário pelo seu id
+      tags: [users]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: O id do usuário
+      responses:
+        200:
+          description: O usuário encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCreatedResponse"
+        404:
+          description: Nenhum usuário encontrado para o id recebido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoUserFoundResponse"
+  /users/{email}:
+    delete:
+      summary: Excluir um usuário por e-mail
+      tags: [users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: O e-mail do usuário
+          example: johdoe@email.com
+      responses:
+        204:
+          description: Usuário excluído com sucesso
+        404:
+          description: Nenhum usuário encontrado para o e-mail recebido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoUserFoundResponse"
+        400:
+          description: O e-mail fornecido é inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidUserEmailResponse"

@@ -1,0 +1,186 @@
+paths:
+  /posts:
+    get:
+      summary: Recupera todos os posts
+      tags: [posts]
+      responses:
+        200:
+          description: Lista de todos os posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PostCreatedResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    post:
+      summary: Registra um novo post
+      tags: [posts]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        201:
+          description: O post registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: "#/components/schemas/PostCreatedResponse"
+        400:
+          description: Ocorre quando uma restrição de post não é respeitada
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/PostCreationFailResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /posts/{id}:
+    get:
+      summary: Recupera um post pelo seu id
+      tags: [posts]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: O id do post
+          example: 1
+      responses:
+        200:
+          description: O post correspondente ao id recebido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: "#/components/schemas/PostCreatedResponse"
+        400:
+          description: O id do post recebido é inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidPostIdResponse"
+        404:
+          description: Nenhum post encontrado para o id recebido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostNotFoundResponse"
+    put:
+      summary: Atualiza um post pelo seu id
+      tags: [posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: O id do post
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        200:
+          description: O post atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: "#/components/schemas/PostCreatedResponse"
+        400:
+          description: O id do post recebido é inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidPostIdResponse"
+        403:
+          description: O post não pertence ao usuário logado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostIsNotYoursResponse"
+        404:
+          description: Nenhum post encontrado para o id recebido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostNotFoundResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    delete:
+      summary: Exclui um post pelo seu id
+      tags: [posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+          description: O id do post
+          example: 1
+      responses:
+        204:
+          description: Post excluído com sucesso
+        400:
+          description: O id do post recebido é inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidPostIdResponse"
+        404:
+          description: Nenhum post encontrado para o id recebido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostNotFoundResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /posts/user/{userId}:
+    get:
+      summary: Recupera todos os posts do usuário relacionado ao id recebido
+      tags: [posts]
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: number
+          required: true
+          description: O id do usuário que criou os posts
+          example: 1
+      responses:
+        200:
+          description: Todos os posts criados pelo usuário relacionado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PostCreatedResponse"

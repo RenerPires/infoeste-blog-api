@@ -1,0 +1,25 @@
+paths:
+  /auth:
+    post:
+      summary: Autenticar um usuário
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginCredentials"
+      responses:
+        200:
+          description: Usuário autenticado com sucesso. O token de acesso é válido por 1 hora.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginSuccessResponse"
+        401:
+          description: Usuário não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginFailResponse"
+  

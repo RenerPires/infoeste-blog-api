@@ -1,0 +1,127 @@
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: Nome do usuário. Deve ter entre 5 e 50 caracteres.
+        email:
+          type: string
+          description: E-mail do usuário.
+        password:
+          type: string
+          description: Senha do usuário, usada para autenticação e restringir serviços. Deve conter pelo menos 8 caracteres, 1 caractere maiúsculo e 1 dígito.
+      example:
+        name: John Doe
+        email: johdoe@email.com
+        password: Senha1234
+    UserCreatedResponse:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: number
+          description: O id gerado automaticamente do usuário registrado.
+        name:
+          type: string
+          description: Nome do usuário. Deve ter entre 5 e 50 caracteres.
+        email:
+          type: string
+          description: E-mail do usuário.
+      example:
+        id: 1
+        name: John Doe
+        email: johdoe@email.com
+    UserCreationFailResponse:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            type: string
+          example:
+            [
+              "Já existe um usuário cadastrado com esse email",
+              "Nome do usuário precisa ter entre 5 e 50 caracteres",
+              "Email inválido",
+              "Password must contain at least 8 characters, 1 uppercase character, and 1 digit",
+            ]
+    LoginCredentials:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          description: E-mail do usuário.
+        password:
+          type: string
+          description: Senha do usuário, usada para autenticação e restringir serviços. Deve conter pelo menos 8 caracteres, 1 caractere maiúsculo e 1 dígito.
+      example:
+        email: johdoe@email.com
+        password: Senha1234
+    LoginSuccessResponse:
+      type: object
+      properties:
+        authorized:
+          type: boolean
+          description: Informa se o usuário está autorizado
+        user:
+          type: object
+          properties:
+            id:
+              type: number
+              description: O id do usuário autenticado
+            name:
+              type: string
+              description: O nome do usuário autenticado
+            email:
+              type: string
+              description: O e-mail do usuário autenticado
+        token:
+          type: string
+          description: O token JWT do usuário autenticado
+      example:
+        authorized: true
+        user:
+          id: 1
+          name: John Doe
+          email: johdoe@email.com
+        token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NzQyNTI0MjEsImV4cCI6MTcwNTc4ODQyMSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.hADhrkAEQrbRwyVoWdm0xLvWhUf-cGMt5x2Kx0cBocI
+    LoginFailResponse:
+      type: object
+      properties:
+        authorized:
+          type: boolean
+          description: Informa se o usuário está autorizado
+        message:
+          type: string
+          description: Mensagem informando que a autenticação falhou
+      example:
+        authorized: false
+        message: Usuário não autorizado
+    InvalidUserEmailResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem informando que o e-mail do usuário recebido é inválido
+      example:
+        message: Email inválido
+    NoUserFoundResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem informando que nenhum usuário foi encontrado
+      example:
+        message: Usuário não encontrado

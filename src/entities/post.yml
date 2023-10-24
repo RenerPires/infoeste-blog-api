@@ -1,0 +1,82 @@
+components:
+  schemas:
+    Post:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          description: Título do post. Deve ter entre 5 e 30 caracteres.
+        content:
+          type: string
+          description: Conteúdo do post. Deve ter entre 5 e 144 caracteres.
+      example:
+        title: Aprendendo programação com Go
+        content: Go é uma linguagem de programação muito popular, que é ótima para aprender lógica de programação.
+    PostCreatedResponse:
+      allOf:
+        - $ref: "#/components/schemas/Post"
+        - type: object
+          required:
+            - id
+            - user
+          properties:
+            id:
+              type: number
+              description: O id gerado automaticamente do post registrado.
+            user:
+              $ref: "#/components/schemas/UserCreatedResponse"
+          example:
+            id: 1
+            title: Aprendendo programação com Go
+            content: Go é uma linguagem de programação muito popular, que é ótima para aprender lógica de programação.
+            user:
+              id: 1
+              name: John Doe
+              email: johdoe@email.com
+    PostCreationFailResponse:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            type: string
+          example:
+            [
+              "Título do produto precisa ter entre 5 e 30 caracteres",
+              "Conteúdo do post precisa ter entre 5 e 144 caracteres",
+            ]
+    PostNotFoundResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem informando que nenhum post foi encontrado
+      example:
+        message: Post não encontrado
+    PostIsNotYoursResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem informando que nenhum post não pertence ao usuário logado
+      example:
+        message: Post não pertence ao usuário
+    InvalidPostIdResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem informando que o id do post recebido é inválido
+      example:
+        message: Id inválido
+    InvalidUserIdResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem informando que o id do usuário recebido é inválido
+      example:
+        message: Id de usuário inválido
