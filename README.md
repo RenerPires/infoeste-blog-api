@@ -1,4 +1,4 @@
-# Infoeste API 
+# Infoeste API Posts
 
 API para estudo de testes de API.
 
