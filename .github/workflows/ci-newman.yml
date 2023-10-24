@@ -8,8 +8,8 @@ jobs:
   newman:
     runs-on: ubuntu-latest
     env:
-      collectionID: 2484339-9b47fc70-d3fe-4f14-a82a-de35787c8468
-      environmentID: 2484339-ba2f2def-c369-4de0-972d-41fa5721f1fb
+      collectionID: 2484339-33cb760a-1427-4a7d-aac6-369b4ba79fcc
+      environmentID: 2484339-ad3b35d5-37c3-4881-ae79-91dfbd78d68a
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2-beta
