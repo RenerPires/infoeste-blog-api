@@ -76,7 +76,7 @@ postRouter.put('/:id', verifyToken, async (req: Request, res: Response) => {
         if (messages.length > 0) {
           return res.status(400).json({ messages })
         }
-
+        postCtrl.save(post)
         return res.status(200).json({ post })
       }
 
@@ -92,19 +92,21 @@ postRouter.put('/:id', verifyToken, async (req: Request, res: Response) => {
 postRouter.delete('/:id', verifyToken, async (req: Request, res: Response) => {
   const { id } = req.params
 
+  let token = req.headers['authorization']
+  const currUserId = decodeUserIdFromToken(token)
+
   const idNumber = parseInt(id)
   if (!isNaN(idNumber)) {
     const post = await postCtrl.findById(idNumber)
-    let token = req.headers['authorization']
-    const userEmail = decodeUserEmailFromToken(token)
-    if (post && post.user.email == userEmail) {
-      await postCtrl.delete(idNumber)
-      return res.status(204).send()
+    if (post) {
+      if(post.user.id === currUserId) {
+        await postCtrl.delete(idNumber)
+        return res.status(204).send()
+      }
+      return res.status(403).json({ message: 'Post não pertence ao usuário' })
     }
-
     return res.status(404).json({ message: 'Post não encontrado' })
   }
-
   return res.status(400).json({ message: 'Id inválido' })
 })
 
