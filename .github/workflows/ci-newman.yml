@@ -2,17 +2,18 @@ name: Newman Test Run
 on:
   push:
     branches:
-    - master
-    - staging
+      - master
+      - staging
 jobs:
   newman:
     runs-on: ubuntu-latest
+    env:
+      collectionID: 2484339-9b47fc70-d3fe-4f14-a82a-de35787c8468
+      environmentID: 2484339-ba2f2def-c369-4de0-972d-41fa5721f1fb
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
-          collectionID: 2484339-9b47fc70-d3fe-4f14-a82a-de35787c8468
-          environmentID: 2484339-ba2f2def-c369-4de0-972d-41fa5721f1fb
       - run: npm install -g newman
-      - run: newman run "https://api.getpostman.com/collections/${{collectionID}}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }}"
+      - run: newman run "https://api.getpostman.com/collections/${{ env.collectionID }}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ env.environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }}"
