@@ -14,6 +14,6 @@ export class PasswordValidator implements ValidatorConstraintInterface {
     )
   }
   defaultMessage?(args?: ValidationArguments): string {
-    return 'Senha precisa conter pelo menos 8 caracteres, 1 caractere maiúsculo e 1 digito'
+    return 'Senha precisa conter pelo menos 8 caracteres, 1 caractere maiúsculo e 1 número'
   }
 }
