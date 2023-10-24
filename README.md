@@ -1,4 +1,4 @@
-# blog-api
+# Infoeste API 
 
 API para estudo de testes de API.
 
