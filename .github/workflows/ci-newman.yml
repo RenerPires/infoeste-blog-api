@@ -15,5 +15,7 @@ jobs:
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '16'
+      - run: npm install
+      - run: npm start
       - run: npm install -g newman
       - run: newman run "https://api.getpostman.com/collections/${{ env.collectionID }}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ env.environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }}"
