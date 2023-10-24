@@ -65,7 +65,7 @@ userRouter.delete('/:email', verifyToken, async (req: Request, res: Response) =>
   if (EmailValidator.validate(email)) {
     const userDeleted = await userCtrl.deleteUserByEmail(email)
     if (userDeleted) {
-      return res.status(204)
+      return res.status(204).send()
     }
 
     return res.status(404).json({ message: 'Usuário não encontrado' })
