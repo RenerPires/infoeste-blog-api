@@ -64,12 +64,12 @@ jobs:
             try {
               const raw = fs.readFileSync('./postman-cli-reports/postman-cli-report.json', 'utf8');
               const report = JSON.parse(raw);
-              const run = report.run || report;
-              const stats = run.stats || run.summary || run;
-              const assertions = stats.assertions || stats.assertion || {};
-              const passed = assertions.passed ?? assertions.pass ?? 0;
-              const failed = assertions.failed ?? assertions.fail ?? 0;
-              const total = passed + failed || '?';
+              const run = report.run ? report.run : report;
+              const statsTests = run.stats && (run.stats.assertions ? run.stats.assertions : run.stats.assertion);
+              const tests = (run.summary && run.summary.tests) ? run.summary.tests : (statsTests ? statsTests : {});
+              const passed = tests.passed != null ? tests.passed : (tests.pass != null ? tests.pass : 0);
+              const failed = tests.failed != null ? tests.failed : (tests.fail != null ? tests.fail : 0);
+              const total = tests.executed != null ? tests.executed : (passed + failed > 0 ? passed + failed : '?');
               const status = failed === 0 ? '✅ All tests passed!' : `❌ ${failed} test(s) failed`;
               body += `| Metric | Count |\n|--------|-------|\n`;
               body += `| Passed | ${passed} |\n`;
