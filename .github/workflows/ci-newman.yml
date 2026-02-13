@@ -6,6 +6,11 @@ on:
     branches:
       - master
       - staging
+  pull_request:
+    branches:
+      - master
+      - staging
+  workflow_dispatch:
 jobs:
   newman:
     runs-on: ubuntu-latest
@@ -22,5 +27,11 @@ jobs:
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm start &
+      - run: npx wait-on http://localhost:3000/docs --timeout 30000
       - run: npm install -g newman newman-reporter-html
-      - run: newman run "https://api.getpostman.com/collections/${{ env.collectionID }}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ env.environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }} -r html --reporter-html-export ./postman-cli-reports/newman-report.html"
+      - run: |
+          mkdir -p postman-cli-reports
+          newman run "https://api.getpostman.com/collections/${{ env.collectionID }}?apikey=${{ secrets.POSTMANAPIKEY }}" \
+            --environment "https://api.getpostman.com/environments/${{ env.environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }}" \
+            -r cli,html \
+            --reporter-html-export ./postman-cli-reports/newman-report.html

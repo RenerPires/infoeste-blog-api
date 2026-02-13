@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - staging
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -63,12 +64,12 @@ jobs:
             try {
               const raw = fs.readFileSync('./postman-cli-reports/postman-cli-report.json', 'utf8');
               const report = JSON.parse(raw);
-              const run = report.run || report;
-              const stats = run.stats || run.summary || run;
-              const assertions = stats.assertions || stats.assertion || {};
-              const passed = assertions.passed ?? assertions.pass ?? 0;
-              const failed = assertions.failed ?? assertions.fail ?? 0;
-              const total = passed + failed || '?';
+              const run = report.run ? report.run : report;
+              const statsTests = run.stats && (run.stats.assertions ? run.stats.assertions : run.stats.assertion);
+              const tests = (run.summary && run.summary.tests) ? run.summary.tests : (statsTests ? statsTests : {});
+              const passed = tests.passed != null ? tests.passed : (tests.pass != null ? tests.pass : 0);
+              const failed = tests.failed != null ? tests.failed : (tests.fail != null ? tests.fail : 0);
+              const total = tests.executed != null ? tests.executed : (passed + failed > 0 ? passed + failed : '?');
               const status = failed === 0 ? '✅ All tests passed!' : `❌ ${failed} test(s) failed`;
               body += `| Metric | Count |\n|--------|-------|\n`;
               body += `| Passed | ${passed} |\n`;
@@ -121,12 +122,16 @@ jobs:
       - name: Prepare GitHub Pages artifact
         run: |
           mkdir -p pages-output
-          if [ -f postman-cli-reports/postman-cli-report.html ]; then
-            cp postman-cli-reports/postman-cli-report.html pages-output/index.html
+          REPORT=$(find . -name "postman-cli-report.html" -o -name "newman-report.html" 2>/dev/null | head -1)
+          if [ -n "$REPORT" ]; then
+            cp "$REPORT" pages-output/index.html
           else
             echo '<!DOCTYPE html><html><body><h1>No report generated</h1><p>Check workflow logs.</p></body></html>' > pages-output/index.html
           fi
-          cp -r postman-cli-reports pages-output/postman-cli-reports 2>/dev/null || mkdir -p pages-output/postman-cli-reports
+          mkdir -p pages-output/postman-cli-reports
+          [ -f postman-cli-report.html ] && cp postman-cli-report.html pages-output/postman-cli-reports/ || true
+          [ -f postman-cli-report.json ] && cp postman-cli-report.json pages-output/postman-cli-reports/ || true
+          [ -d postman-cli-reports ] && cp -r postman-cli-reports/* pages-output/postman-cli-reports/ 2>/dev/null || true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
