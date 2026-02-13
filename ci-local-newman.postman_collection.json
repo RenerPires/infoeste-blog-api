@@ -1,0 +1,403 @@
+{
+  "info": {
+    "_postman_id": "33cb760a-1427-4a7d-aac6-369b4ba79fcc",
+    "name": "Api Blog Data Driven",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2023-10-24T14:28:47.000Z",
+    "updatedAt": "2023-10-24T19:48:26.000Z",
+    "lastUpdatedBy": "2484339",
+    "uid": "2484339-33cb760a-1427-4a7d-aac6-369b4ba79fcc"
+  },
+  "item": [
+    {
+      "name": "1 - Teste de unidade User",
+      "item": [
+        {
+          "name": "Criar um usuário Aleatório",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "787c8a5c-4546-4ff8-ae3e-1653c7d53cef",
+                "exec": [
+                  "var uuid = require(\"uuid\")\r",
+                  "\r",
+                  "pm.environment.set(\"currentRandomId\", uuid.v4())\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "f6a6af06-0ac0-4755-aaa3-58a21ac650af",
+                "exec": [
+                  "const { user } = pm.response.json()\r",
+                  "const CURRENT_RANDOM_ID = pm.variables.get(\"currentRandomId\")\r",
+                  "\r",
+                  "pm.test(\"usuário com dados pseudorandomicos foi criado com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).be.eq(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"dados pseudorandomicos equivalem com os dados persistidos no banco\", () => {\r",
+                  "    pm.expect(user.name).be.eq(CURRENT_RANDOM_ID)\r",
+                  "    pm.expect(user.email).be.eq(`${CURRENT_RANDOM_ID}@email.com`)\r",
+                  "})\r",
+                  "\r",
+                  "pm.environment.set(\"currentUserId\", user.id)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "7e3178b8-ca68-4dd1-9680-51d6bdf86cb7",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{currentRandomId}}\",\r\n  \"email\": \"{{currentRandomId}}@email.com\",\r\n  \"password\": \"SenhaDoRandom123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": [],
+          "createdAt": "2023-10-24T14:42:59.000Z",
+          "updatedAt": "2023-10-24T17:27:05.000Z",
+          "uid": "2484339-7e3178b8-ca68-4dd1-9680-51d6bdf86cb7"
+        },
+        {
+          "name": "Ver usuário criado baseado no id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ed5d4dcf-a148-4e14-93ea-9579f2b30ab4",
+                "exec": [
+                  "const { user } = pm.response.json()\r",
+                  "const CURRENT_RANDOM_ID = pm.variables.get(\"currentRandomId\")\r",
+                  "\r",
+                  "pm.test(\"detalhes do usuário retornaram com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).be.eq(200)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"dados pseudorandomicos equivalem com os dados da criação\", () => {\r",
+                  "    pm.expect(user.name).be.eq(CURRENT_RANDOM_ID)\r",
+                  "    pm.expect(user.email).be.eq(`${CURRENT_RANDOM_ID}@email.com`)\r",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "73a9a28d-1f5c-4fff-940d-4fcacc08b78c",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{currentUserId}}"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "createdAt": "2023-10-24T14:43:11.000Z",
+          "updatedAt": "2023-10-24T17:27:06.000Z",
+          "uid": "2484339-73a9a28d-1f5c-4fff-940d-4fcacc08b78c"
+        }
+      ],
+      "id": "9c12e75c-98b2-46ae-ada9-00044102d1e5",
+      "createdAt": "2023-10-24T14:42:20.000Z",
+      "updatedAt": "2023-10-24T18:31:56.000Z",
+      "uid": "2484339-9c12e75c-98b2-46ae-ada9-00044102d1e5"
+    },
+    {
+      "name": "2 - Testede integração User-Auth",
+      "item": [
+        {
+          "name": "Criar um usuário Aleatório",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "787c8a5c-4546-4ff8-ae3e-1653c7d53cef",
+                "exec": [
+                  "var uuid = require(\"uuid\")\r",
+                  "\r",
+                  "pm.environment.set(\"currentRandomId\", uuid.v4())\r",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "f6a6af06-0ac0-4755-aaa3-58a21ac650af",
+                "exec": [
+                  "const { user } = pm.response.json()\r",
+                  "const CURRENT_RANDOM_ID = pm.variables.get(\"currentRandomId\")\r",
+                  "\r",
+                  "pm.test(\"usuário com dados pseudorandomicos foi criado com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).be.eq(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"dados pseudorandomicos equivalem com os dados persistidos no banco\", () => {\r",
+                  "    pm.expect(user.name).be.eq(CURRENT_RANDOM_ID)\r",
+                  "    pm.expect(user.email).be.eq(`${CURRENT_RANDOM_ID}@email.com`)\r",
+                  "})\r",
+                  "\r",
+                  "pm.environment.set(\"currentUserId\", user.id)"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "9fcb4a5d-b69c-45b2-92dd-2392d1a99416",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{currentRandomId}}\",\r\n  \"email\": \"{{currentRandomId}}@email.com\",\r\n  \"password\": \"SenhaDoRandom123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": [],
+          "createdAt": "2023-10-24T17:37:55.000Z",
+          "updatedAt": "2023-10-24T17:38:08.000Z",
+          "uid": "2484339-9fcb4a5d-b69c-45b2-92dd-2392d1a99416"
+        },
+        {
+          "name": "Autenticar Usuário",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4c763889-2ab9-44f2-b4b5-45e6a2e1ff1b",
+                "exec": [
+                  "const response = pm.response.json()\r",
+                  "\r",
+                  "if(pm.response.code == 200) {\r",
+                  "    let token = response.token\r",
+                  "    pm.environment.set(\"token\", token);\r",
+                  "}\r",
+                  "\r",
+                  "pm.test(\"autenticação deve ter ocorrido com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).to.be.eq(200)\r",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "3a03924f-09eb-49e1-8bc0-e70a6a66d26d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{currentRandomId}}@email.com\",\r\n  \"password\": \"SenhaDoRandom123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            }
+          },
+          "response": [],
+          "createdAt": "2023-10-24T17:32:34.000Z",
+          "updatedAt": "2023-10-24T17:43:42.000Z",
+          "uid": "2484339-3a03924f-09eb-49e1-8bc0-e70a6a66d26d"
+        },
+        {
+          "name": "Ver meus dados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "5bbd82ba-9e0d-43e2-9fde-e31984b218b6",
+                "exec": [
+                  "const { user } = pm.response.json()\r",
+                  "const CURRENT_RANDOM_ID = pm.variables.get(\"currentRandomId\")\r",
+                  "\r",
+                  "pm.test(\"dados sendo retornados com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).be.eq(200)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"dados do usuário autenticado coincidem com os dados do usuário cadastrado\", () => {\r",
+                  "    pm.expect(user.name).be.eq(CURRENT_RANDOM_ID)\r",
+                  "    pm.expect(user.email).be.eq(`${CURRENT_RANDOM_ID}@email.com`)\r",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "dcb28f01-24be-41ac-a43b-ff1c5901fa76",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": [],
+          "createdAt": "2023-10-24T17:32:41.000Z",
+          "updatedAt": "2023-10-24T17:40:09.000Z",
+          "uid": "2484339-dcb28f01-24be-41ac-a43b-ff1c5901fa76"
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "5d49be1e-e492-432e-863f-c09c14915f8e",
+                "exec": [
+                  "pm.test(\"usuario deletado com sucesso\", () => {\r",
+                  "    pm.expect(pm.response.code).to.be.eq(204)\r",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "08a93737-6db6-4404-b9b4-936c49cbfd3e",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ":email"
+              ],
+              "variable": [
+                {
+                  "id": "46576215-19bb-4efa-ad2d-8b874bcce9d9",
+                  "key": "email",
+                  "value": "{{currentRandomId}}@email.com"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "createdAt": "2023-10-24T17:37:03.000Z",
+          "updatedAt": "2023-10-24T17:41:06.000Z",
+          "uid": "2484339-08a93737-6db6-4404-b9b4-936c49cbfd3e"
+        }
+      ],
+      "id": "3283f883-5552-48ed-846a-fe3435e7738e",
+      "createdAt": "2023-10-24T17:31:36.000Z",
+      "updatedAt": "2023-10-24T17:38:03.000Z",
+      "uid": "2484339-3283f883-5552-48ed-846a-fe3435e7738e"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "456f1a6a-2b54-4d0a-b8f8-5cff994f188a",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "44bd2275-801e-46cb-98fd-ffe3a38f741e",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

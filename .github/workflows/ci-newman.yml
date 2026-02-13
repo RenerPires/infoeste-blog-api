@@ -1,3 +1,5 @@
+# Original workflow - used when Postman CLI was not yet available for CI.
+# Kept for historical reference and INFOESTE lecture material.
 name: Newman Test Run
 on:
   push:
@@ -11,11 +13,15 @@ jobs:
       collectionID: 2484339-33cb760a-1427-4a7d-aac6-369b4ba79fcc
       environmentID: 2484339-ad3b35d5-37c3-4881-ae79-91dfbd78d68a
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '16'
-      - run: npm install
-      - run: npm start &
-      - run: npm install -g newman
-      - run: newman run "https://api.getpostman.com/collections/${{ env.collectionID }}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ env.environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }}"
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm start &
+      - run: npm install -g newman newman-reporter-html
+      - run: newman run "https://api.getpostman.com/collections/${{ env.collectionID }}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ env.environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }} -r html --reporter-html-export ./postman-cli-reports/newman-report.html"
